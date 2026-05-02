@@ -1,18 +1,20 @@
-<!-- doc-version: 0.1.0 -->
+<!-- doc-version: 0.1.1 -->
 # LLM Start Guide - tomatic
 
 ## Read This First (Mandatory)
 
-Welcome to tomatic. Before you contribute, review and adapt the sections below to match the project requirements. Replace angle-bracket placeholders (<...>) with real values and share this file with every LLM agent.
+Welcome to Tomatic. This is an agentic indoor tomato grow system: a deterministic TypeScript control-core owns physical control; an LLM agent observes the cabinet through MCP and proposes intents that the control-core validates and turns into commands. The plant survives without the LLM.
 
 Recommended reading order:
-1. This file (rules, workflows, and current expectations)
-2. docs/PROJECT_CONTEXT.md (vision, architecture, current state)
-3. docs/ARCHITECTURE.md (optional: architecture, contracts, roadmap)
-4. docs/VERSIONING_RULES.md (version management policy)
-5. docs/llm/README.md (LLM docs index)
-6. docs/llm/HANDOFF.md (current work state and priorities)
-7. docs/llm/DECISIONS.md (stable rationale; link from HANDOFF)
+1. This file (rules, workflows, and current expectations).
+2. **`~/src/Tomatic_v3_2.docx`** — source design document. Chapter 4 (hard rules R1–R12) is axiomatic; if any instruction contradicts a rule, pause and ask.
+3. `AGENTS.md` — homelab integration rules and required reading from `~/src/home-infra/`.
+4. `docs/PROJECT_CONTEXT.md` — vision, objectives, stakeholders, current state.
+5. `docs/ARCHITECTURE.md` — 8 layers, hard rules R1–R12, key flows, contracts.
+6. `docs/STRUCTURE.md` — planned monorepo layout.
+7. `docs/VERSIONING_RULES.md` — version management policy.
+8. `docs/llm/HANDOFF.md` — current work state and priorities.
+9. `docs/llm/DECISIONS.md` — D-001..D-009 already recorded.
 
 ## Critical Rules (Non-Negotiable)
 
@@ -72,9 +74,9 @@ Recommended reading order:
 ## Current Focus (Snapshot)
 
 Source of truth: docs/llm/HANDOFF.md.
-- Last Updated: 2026-05-02 - LLM-DocKit init
-- Working on: Initial scaffold
-- Status: Scaffolded from LLM-DocKit, ready for first session
+- Last Updated: 2026-05-02 - Claude Opus 4.7
+- Working on: Initial scaffold + doc rewrite. No application code yet.
+- Status: Ready to start **H0 — Schemas + DB** in the next session (pnpm workspace, Zod schemas, drizzle, SQLite WAL, vitest, GitHub Actions test workflow).
 
 Keep this section synchronized with the "Current Status" block in docs/llm/HANDOFF.md.
 
@@ -92,11 +94,12 @@ Keep this section synchronized with the "Current Status" block in docs/llm/HANDO
 - [ ] Add an entry to docs/llm/HISTORY.md
 <!-- DOCKIT-TEMPLATE:END checklist -->
 
-## Customization Notes for Maintainers
-- Replace tomatic with the actual project name.
-- Define the conversation language (or remove the rule if not applicable).
-- Remove or adapt any sections that do not align with your workflow (e.g., environment file policy).
-- Populate docs/STRUCTURE.md with details about your repository layout.
+## Project-Specific Rules (Tomatic)
+
+- **R1–R12 of the source design document are axioms.** See `docs/ARCHITECTURE.md` §Non-negotiables. Memorize them before writing code that touches MQTT, SQLite, the planner, the control loops, or the firmware.
+- **Never edit `~/src/Tomatic_v3_2.docx`.** It is read-only context. If implementation diverges, write a new ADR in `docs/llm/DECISIONS.md` (D-010+) explaining the deviation.
+- **Mandatory homelab updates** apply per `AGENTS.md` and `~/.claude/CLAUDE.md`: when changes affect host placement, ports, exposed URLs, or runtime version, update `~/src/home-infra/docs/` (INVENTORY/SERVICES/PROJECTS) **in the same session**, before declaring the change done.
+- **Acceptance test on every hit (R11).** No advance to the next milestone without closing the current one with the test specified in the source doc §22.
 
 ## Quick Navigation
 - Project Overview: docs/PROJECT_CONTEXT.md

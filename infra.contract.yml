@@ -8,37 +8,50 @@
 # not consume it yet; ~/src/home-infra/catalog/services.yml remains the
 # authoritative input for portal rendering. Filling this contract
 # validates the protocol shape on a real project.
-#
-# Replace every TODO with a concrete value. Leave fields out entirely
-# if they do not apply to this project (rather than committing TODO).
-#
-# Secrets: never commit values. Reference Doppler variables by name in
-# `secret_refs` using the form `doppler://<project>/<config>/<VAR>`.
 
-id: TODO-slug                          # short slug, [a-z0-9-]+
-name: TODO Project Display Name
-repository: TODO https://github.com/cdelalama/<project>
+id: tomatic
+name: Tomatic
+repository: https://github.com/cdelalama/tomatic
 
+# Services land hit by hit. Until V1.0-kernel reaches H10–H11 these are
+# planned, not deployed. Update this file when the corresponding
+# container actually runs on the NAS.
 services:
-  - id: TODO-service-id                # cross-references home-infra/catalog/services.yml if portal-visible
-    name: TODO Display Name
-    url: TODO https://<service>.lamanoriega.com  # remove if no UI/API
+  - id: tomatic-web
+    name: Tomatic Operator Web
+    url: http://10.0.0.220:3001            # planned, internal-only on NAS
+    # Edge route will be added when the public dashboard ships in V1.2.
 
-runtime: docker                        # docker | systemd | other
+  - id: tomatic-public-dashboard
+    name: Tomatic Public Dashboard
+    url: https://tomatic.lamanoriega.com   # planned for V1.2 via edge-caddy
+    # Static DNS record + edge-caddy vhost will be added at H18.
+
+  - id: tomatic-esphome-builder
+    name: Tomatic ESPHome Builder
+    url: http://10.0.0.220:6052            # planned, internal-only
+
+runtime: docker
 
 deploy:
-  host: TODO                           # nas | dev-vm | pihas | zwave | zigbee
-  method: docker-save-load             # docker-save-load | git-pull | manual
-  compose: TODO                        # path on target host, e.g. /share/Container/compose/<project>/
+  host: nas                                 # primary target per source doc §13 (NAS-first)
+  method: docker-save-load                  # build on dev-vm, transfer to NAS
+  compose: /share/Container/compose/tomatic/
 
 runbooks:
-  rebuild: TODO                        # link or relative path to rebuild instructions
-  restore: TODO                        # how to restore data from backup
-  verify:  TODO                        # smoke-test or healthcheck recipe
-  rollback: TODO                       # revert to previous image / version
+  rebuild: docs/operations/DEPLOY_PLAYBOOK.md     # links to ~/src/home-infra/docs/CONVENTIONS.md
+  restore: TODO                                    # litestream restore + ESPHome OTA recovery — fill at H11
+  verify:  TODO                                    # smoke-test playbook — fill at H11
+  rollback: TODO                                   # docker compose pull <previous tag> + bridge db rollback — fill at H11
 
 secret_refs:
-  # Reference Doppler variables by name; never include values.
-  # Example:
-  #   DATABASE_URL: doppler://my-project/dev/DATABASE_URL
-  TODO_VAR: doppler://TODO-project/TODO-config/TODO_VAR
+  # All values live in Doppler. Project `tomatic`, config `dev` (to be
+  # created at H10). Values are never committed.
+  MQTT_PASSWORD:        doppler://tomatic/dev/MQTT_PASSWORD
+  ADMIN_PASSWORD:       doppler://tomatic/dev/ADMIN_PASSWORD
+  ANTHROPIC_API_KEY:    doppler://tomatic/dev/ANTHROPIC_API_KEY
+  OTA_PASSWORD:         doppler://tomatic/dev/OTA_PASSWORD
+  WIFI_SSID:            doppler://tomatic/dev/WIFI_SSID
+  WIFI_PASSWORD:        doppler://tomatic/dev/WIFI_PASSWORD
+  TELEGRAM_BOT_TOKEN:   doppler://tomatic/dev/TELEGRAM_BOT_TOKEN
+  TELEGRAM_CHAT_ID:     doppler://tomatic/dev/TELEGRAM_CHAT_ID
