@@ -1,0 +1,44 @@
+# infra.contract.yml — Project contract for home-infra-protocol
+#
+# Spec:    ~/src/home-infra-protocol/SPEC.md
+# Format:  ~/src/home-infra-protocol/docs/PROJECT_CONTRACTS.md
+# Schemas: ~/src/home-infra-protocol/schemas/
+#
+# As of 2026-05 this file is OPTIONAL and EXPERIMENTAL. The portal does
+# not consume it yet; ~/src/home-infra/catalog/services.yml remains the
+# authoritative input for portal rendering. Filling this contract
+# validates the protocol shape on a real project.
+#
+# Replace every TODO with a concrete value. Leave fields out entirely
+# if they do not apply to this project (rather than committing TODO).
+#
+# Secrets: never commit values. Reference Doppler variables by name in
+# `secret_refs` using the form `doppler://<project>/<config>/<VAR>`.
+
+id: TODO-slug                          # short slug, [a-z0-9-]+
+name: TODO Project Display Name
+repository: TODO https://github.com/cdelalama/<project>
+
+services:
+  - id: TODO-service-id                # cross-references home-infra/catalog/services.yml if portal-visible
+    name: TODO Display Name
+    url: TODO https://<service>.lamanoriega.com  # remove if no UI/API
+
+runtime: docker                        # docker | systemd | other
+
+deploy:
+  host: TODO                           # nas | dev-vm | pihas | zwave | zigbee
+  method: docker-save-load             # docker-save-load | git-pull | manual
+  compose: TODO                        # path on target host, e.g. /share/Container/compose/<project>/
+
+runbooks:
+  rebuild: TODO                        # link or relative path to rebuild instructions
+  restore: TODO                        # how to restore data from backup
+  verify:  TODO                        # smoke-test or healthcheck recipe
+  rollback: TODO                       # revert to previous image / version
+
+secret_refs:
+  # Reference Doppler variables by name; never include values.
+  # Example:
+  #   DATABASE_URL: doppler://my-project/dev/DATABASE_URL
+  TODO_VAR: doppler://TODO-project/TODO-config/TODO_VAR
