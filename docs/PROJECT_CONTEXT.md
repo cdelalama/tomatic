@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.1 -->
+<!-- doc-version: 0.1.3 -->
 # Project Context — Tomatic
 
 ## Vision
@@ -71,7 +71,7 @@ The full layered diagram, hard rules R1–R12, and key flows are in [`ARCHITECTU
 - Public GitHub repo: <https://github.com/cdelalama/tomatic> (MIT).
 - No application code yet. The next step is **H0 — schemas + DB**: Zod types in `packages/shared`, drizzle schema in `packages/db`, SQLite WAL configured, vitest green.
 - Hardware available at Carlos's home (see README and [`ARCHITECTURE.md`](ARCHITECTURE.md) §Hardware). Pending purchase before real plants enter the cabinet: float switch for the 20 L tank.
-- Source design document: `~/src/Tomatic_v3_2.docx` (Carlos, May 2026). The hard rules in chapter 4 are axiomatic — any contradicting instruction must pause and ask.
+- Source design document: [`reference/Tomatic_v3_2.docx`](reference/Tomatic_v3_2.docx) (Carlos, May 2026). The hard rules in chapter 4 are axiomatic — any contradicting instruction must pause and ask.
 
 ## Upcoming Milestones
 
@@ -94,7 +94,7 @@ V1.1-agentic (H12–H16) and V1.2-public (H17–H20) follow once V1.0 is closed.
 
 ## References
 
-- **Source design document**: `~/src/Tomatic_v3_2.docx` (canonical; chapter 4 = hard rules, chapter 22 = roadmap, chapter 23 = step-by-step execution).
+- **Source design document**: [`reference/Tomatic_v3_2.docx`](reference/Tomatic_v3_2.docx) (canonical; chapter 4 = hard rules, chapter 22 = roadmap, chapter 23 = step-by-step execution).
 - **Homelab source of truth**: `~/src/home-infra/docs/` (INVENTORY, SERVICES, PROJECTS, CONVENTIONS).
 - **Homelab protocol**: <https://github.com/cdelalama/home-infra-protocol>.
 - **Documentation scaffold**: <https://github.com/cdelalama/LLM-DocKit> (v4.6.1).

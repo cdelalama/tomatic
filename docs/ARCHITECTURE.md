@@ -1,10 +1,10 @@
-<!-- doc-version: 0.1.1 -->
+<!-- doc-version: 0.1.3 -->
 # Tomatic Architecture
 
 > Version: 0.1.0-draft
 > Last Updated: 2026-05-02
 > Status: Design (no code yet)
-> Source of truth: `~/src/Tomatic_v3_2.docx` (Carlos, May 2026). When this file and the source document disagree, the source document wins.
+> Source of truth: [`reference/Tomatic_v3_2.docx`](reference/Tomatic_v3_2.docx) (Carlos, May 2026). When this file and the source document disagree, the source document wins.
 
 ## Overview
 
@@ -153,16 +153,16 @@ The repo ships an experimental homelab project contract (`infra.contract.yml`) p
 - **On-disk layout (NAS production)**:
   - `/share/Container/compose/tomatic/` — compose files + `.env` + Caddyfile
   - `/share/Container/compose/tomatic/data/sqlite/tomatic.db` (mounted into bridge + control-core + web)
-  - `/share/Container/compose/tomatic/data/mosquitto/` — MQTT persistence
   - `/share/Container/compose/tomatic/firmware/esphome/` — ESPHome Builder config
   - `/share/Backups/tomatic/` — litestream replicas
+  - No Mosquitto data directory on NAS — the broker lives on the `zigbee` RPi (D-010 / `home-infra` ADR-0011); MQTT persistence is owned by that host.
 - **Retention**: `sensor_readings` and `actuator_events` rolled by time partition (TBD in V1.x). Decision deferred — H4 acceptance does not depend on it.
 - **No PII**: only environmental telemetry and operator-authored journal entries.
 
 ## Security & Privacy Notes
 
 - **AuthN/AuthZ**: operator web behind `NextAuth` credentials provider, password from env (Doppler-injected). Public dashboard is read-only with no auth.
-- **MQTT ACL**: Mosquitto with per-client ACL — bridge can publish to `commands/+/request`, ESP32 can publish to `sensors/+`, `commands/+/ack`, `alerts/+`. No client should be able to publish a command directly.
+- **MQTT ACL**: enforced on the shared Mosquitto on the `zigbee` RPi (D-010 / `home-infra` ADR-0011). Per-client ACL — `tomatic_bridge` can publish to `tomatic/+/commands/+/request`, `zigbee2mqtt/+/set`, `tomatic/+/agent/+`; the ESP32 client can publish to `tomatic/+/sensors/+`, `tomatic/+/commands/+/ack`, `tomatic/+/alerts/+` only. No Tomatic client may publish to a command topic directly. Z2M and HA users keep their existing ACLs untouched.
 - **Secrets**: Doppler project `tomatic` (to be created), config `dev`. Variables: `MQTT_PASSWORD`, `ANTHROPIC_API_KEY`, `ADMIN_PASSWORD`, `OTA_PASSWORD`, `WIFI_SSID`, `WIFI_PASSWORD`, optional `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 - **OTA**: ESPHome OTA password lives in `firmware/esphome/secrets.yaml`, `.gitignored`. First flash is USB; every subsequent firmware update is OTA over WiFi.
 - **External exposure**: only `tomatic.lamanoriega.com` (V1.2 dashboard, behind `edge-caddy` on the NAS, public Let's Encrypt wildcard). Operator web is internal-only on `:3001`.
@@ -172,18 +172,18 @@ The repo ships an experimental homelab project contract (`infra.contract.yml`) p
 
 | Component | Host | Port (host) | Notes |
 |---|---|---|---|
-| Mosquitto MQTT | NAS | `1883` | Tomatic-only ACL; separate from Z2M's broker on `zigbee` |
-| `mqtt-bridge` | NAS | `8081` (`/healthz` `/readyz` `/metrics`) | Reads/writes SQLite |
+| Mosquitto MQTT (shared) | `zigbee` RPi 10.0.0.139 | `1883` | **Reused — not a new broker.** Existing homelab Mosquitto already serving Z2M and HA. Tomatic-scoped ACL + dedicated `tomatic_bridge` user provisioned at H1. See `home-infra` ADR-0011 / project D-010. |
+| `mqtt-bridge` | NAS | `8081` (`/healthz` `/readyz` `/metrics`) | Single MQTT client against `zigbee.home.arpa:1883`; reads/writes SQLite |
 | `control-core` | NAS | `8082` | Pure logic, exposes metrics |
 | `agent-runner` | NAS | (no port) | systemd-style (Docker `restart: unless-stopped`); cron schedule |
 | `web-operativa` (Next.js) | NAS | `3001` | Internal only; behind `edge-caddy` if exposed publicly |
 | `public-dashboard` (Next.js) | NAS | `3000` | V1.2+; exposed via `edge-caddy` as `tomatic.lamanoriega.com` |
 | `esphome-builder` | NAS | `6052` (`network_mode: host`) | Editor + OTA host |
 | `litestream` | NAS | (no port) | Continuous SQLite replication |
-| Z2M (existing) | `zigbee` RPi 10.0.0.139 | `8080` (UI), `1883` (Mosquitto) | Already running 56 paired devices including 6× Sonoff T2 used by Tomatic |
-| ESP32 cabinet-a | inside the tent | — | Publishes to NAS Mosquitto over WiFi |
+| Z2M (existing) | `zigbee` RPi 10.0.0.139 | `8080` (UI) | Already running 56 paired devices including 6× Sonoff T2 used by Tomatic; shares the broker on the same host |
+| ESP32 cabinet-a | inside the tent | — | Publishes to `zigbee.home.arpa:1883` over WiFi |
 
-Open decisions to resolve before H1: whether to run a Tomatic-only Mosquitto on the NAS or reuse the one on `zigbee` (today's homelab Mosquitto). Default for now is *Tomatic-only on NAS* to keep ACL boundaries clean, but the Sonoff T2 actuators are reached through Z2M on `zigbee`, which means the bridge will hold two MQTT clients (one per broker).
+The MQTT broker decision is settled (D-010 / `home-infra` ADR-0011): Tomatic reuses the existing shared Mosquitto on `zigbee.home.arpa:1883`. The `tomatic-bridge` runs a single MQTT client and uses the same broker for both `tomatic/<cabinet>/+` topics and `zigbee2mqtt/+/set` commands targeting Sonoff T2 actuators — no cross-broker plumbing is needed. The defense-in-depth for a `zigbee` reboot is R5 default-off + R8 TTL-based timeouts + the ESP32 autonomous local safe-state.
 
 ## Roadmap
 

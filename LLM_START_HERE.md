@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.1 -->
+<!-- doc-version: 0.1.3 -->
 # LLM Start Guide - tomatic
 
 ## Read This First (Mandatory)
@@ -7,7 +7,7 @@ Welcome to Tomatic. This is an agentic indoor tomato grow system: a deterministi
 
 Recommended reading order:
 1. This file (rules, workflows, and current expectations).
-2. **`~/src/Tomatic_v3_2.docx`** — source design document. Chapter 4 (hard rules R1–R12) is axiomatic; if any instruction contradicts a rule, pause and ask.
+2. **[`docs/reference/Tomatic_v3_2.docx`](docs/reference/Tomatic_v3_2.docx)** — source design document. Chapter 4 (hard rules R1-R12) is axiomatic; if any instruction contradicts a rule, pause and ask.
 3. `AGENTS.md` — homelab integration rules and required reading from `~/src/home-infra/`.
 4. `docs/PROJECT_CONTEXT.md` — vision, objectives, stakeholders, current state.
 5. `docs/ARCHITECTURE.md` — 8 layers, hard rules R1–R12, key flows, contracts.
@@ -97,7 +97,7 @@ Keep this section synchronized with the "Current Status" block in docs/llm/HANDO
 ## Project-Specific Rules (Tomatic)
 
 - **R1–R12 of the source design document are axioms.** See `docs/ARCHITECTURE.md` §Non-negotiables. Memorize them before writing code that touches MQTT, SQLite, the planner, the control loops, or the firmware.
-- **Never edit `~/src/Tomatic_v3_2.docx`.** It is read-only context. If implementation diverges, write a new ADR in `docs/llm/DECISIONS.md` (D-010+) explaining the deviation.
+- **Never edit `docs/reference/Tomatic_v3_2.docx`.** It is read-only context. If implementation diverges, write a new ADR in `docs/llm/DECISIONS.md` (D-010+) explaining the deviation.
 - **Mandatory homelab updates** apply per `AGENTS.md` and `~/.claude/CLAUDE.md`: when changes affect host placement, ports, exposed URLs, or runtime version, update `~/src/home-infra/docs/` (INVENTORY/SERVICES/PROJECTS) **in the same session**, before declaring the change done.
 - **Acceptance test on every hit (R11).** No advance to the next milestone without closing the current one with the test specified in the source doc §22.
 

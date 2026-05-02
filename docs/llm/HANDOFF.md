@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.1 -->
+<!-- doc-version: 0.1.3 -->
 # LLM Work Handoff
 
 This file is the current operational snapshot. Long-form rationale lives in
@@ -7,14 +7,14 @@ This file is the current operational snapshot. Long-form rationale lives in
 ## Current Status
 
 - Last Updated: 2026-05-02 - Claude Opus 4.7
-- Session Focus: Initial scaffold + doc rewrite. No application code yet.
-- Status: Ready to start **H0 — Schemas + DB** in the next session.
+- Session Focus: Context audit before H0. Verified live state of the homelab MQTT topology, corrected `home-infra/docs/{INVENTORY,SERVICES,PROJECTS}.md`, and resolved the broker decision (D-010 / `home-infra` ADR-0011) — Tomatic reuses the shared Mosquitto on the `zigbee` RPi. No application code yet.
+- Status: Ready to start **H0 — Schemas + DB** in the next session. No blockers.
 
 ## Project Summary
 
 Tomatic is an autonomous indoor tomato grow system. A deterministic TypeScript control-core owns physical control and runs three loops (light, water, climate) without any LLM. The LLM proposes intents through an MCP server; the control-core validates, plans, and emits commands with `command_id` + TTL idempotency. The plant survives without the LLM.
 
-Source design document: `~/src/Tomatic_v3_2.docx` (Carlos, May 2026). Chapter 4 (hard rules R1–R12) is axiomatic — any contradicting instruction must pause and ask.
+Source design document: [`../reference/Tomatic_v3_2.docx`](../reference/Tomatic_v3_2.docx) (Carlos, May 2026). Chapter 4 (hard rules R1-R12) is axiomatic — any contradicting instruction must pause and ask.
 
 ## Next Steps (V1.0-kernel, hit by hit)
 
@@ -47,14 +47,14 @@ The first nine architectural decisions are pre-recorded in [`DECISIONS.md`](DECI
 
 ## Open Questions
 
-1. **Mosquitto topology**: run a Tomatic-dedicated Mosquitto on the NAS (cleaner ACL boundaries) or reuse the one on `zigbee.home.arpa` 10.0.0.139 that already serves Z2M? Default for now: Tomatic-dedicated on NAS, with the bridge holding two MQTT clients (one per broker). Revisit before H1.
+1. ~~**Mosquitto topology**~~: **resolved 2026-05-02 — D-010** (mirrors `home-infra` ADR-0011). Tomatic reuses the existing shared Mosquitto on the `zigbee` RPi (`zigbee.home.arpa:1883`); no NAS broker. The bridge runs a single MQTT client. ACL + `tomatic_bridge` user provisioned at H1 on the existing broker.
 2. **Public dashboard hosting**: NAS behind `edge-caddy` with a `tomatic.lamanoriega.com` static DNS record (consistent with current homelab pattern), or Vercel free tier? Default for now: NAS + edge-caddy. Revisit at H18.
 3. **Doppler project naming**: `tomatic` (single config `dev`) or `tomatic-dev` + `tomatic-prd`? Decision deferred to H10.
-4. **MQTT cross-broker routing for Z2M actuators**: the bridge needs to publish to `zigbee2mqtt/<dev>/set` on the `zigbee` RPi while listening to `tomatic/+` on the NAS. Confirm two MQTT clients in the bridge is the chosen approach (vs. a tiny relay container on the `zigbee` RPi).
+4. ~~**MQTT cross-broker routing for Z2M actuators**~~: **moot after D-010**. With a single broker (the one on `zigbee`), `tomatic/<cabinet>/+` and `zigbee2mqtt/+/set` live on the same broker; no cross-broker bridge is needed.
 
 ## Files To Read First
 
-- `~/src/Tomatic_v3_2.docx` — source design document, chapter 4 (hard rules) is axiomatic.
+- [`../reference/Tomatic_v3_2.docx`](../reference/Tomatic_v3_2.docx) — source design document, chapter 4 (hard rules) is axiomatic.
 - `README.md`, `AGENTS.md`, `LLM_START_HERE.md`.
 - [`docs/PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md), [`docs/STRUCTURE.md`](../STRUCTURE.md).
 - [`docs/llm/DECISIONS.md`](DECISIONS.md).
@@ -63,5 +63,5 @@ The first nine architectural decisions are pre-recorded in [`DECISIONS.md`](DECI
 
 ## Do Not Touch
 
-- `~/src/Tomatic_v3_2.docx` — read-only source. Never edit; if a design contradiction arises, write a new ADR in [`DECISIONS.md`](DECISIONS.md) explaining the deviation.
+- [`../reference/Tomatic_v3_2.docx`](../reference/Tomatic_v3_2.docx) — read-only source. Never edit; if a design contradiction arises, write a new ADR in [`DECISIONS.md`](DECISIONS.md) explaining the deviation.
 - The `pentagi/` git submodule pattern from PentAGI-Lab does not apply here — Tomatic has no upstream submodule.

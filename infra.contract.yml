@@ -20,11 +20,13 @@ services:
   - id: tomatic-web
     name: Tomatic Operator Web
     url: http://10.0.0.220:3001            # planned, internal-only on NAS
+    deps: [mosquitto]                      # shared broker on `zigbee` RPi (home-infra ADR-0011)
     # Edge route will be added when the public dashboard ships in V1.2.
 
   - id: tomatic-public-dashboard
     name: Tomatic Public Dashboard
     url: https://tomatic.lamanoriega.com   # planned for V1.2 via edge-caddy
+    deps: [mosquitto]
     # Static DNS record + edge-caddy vhost will be added at H18.
 
   - id: tomatic-esphome-builder
@@ -37,6 +39,27 @@ deploy:
   host: nas                                 # primary target per source doc §13 (NAS-first)
   method: docker-save-load                  # build on dev-vm, transfer to NAS
   compose: /share/Container/compose/tomatic/
+
+# MQTT topology — see home-infra ADR-0011 (2026-05-02) and project ADR D-010.
+# Tomatic does NOT run its own broker. It reuses the existing shared
+# Mosquitto on the `zigbee` RPi (10.0.0.139:1883), which is the only
+# MQTT broker on the homelab. The `tomatic-bridge` runs a single MQTT
+# client and uses the same broker for both `tomatic/<cabinet>/+` topics
+# and `zigbee2mqtt/+/set` commands targeting Sonoff T2 actuators —
+# no cross-broker plumbing is needed.
+mqtt:
+  broker_host: zigbee.home.arpa             # 10.0.0.139:1883
+  broker_service_id: mosquitto              # references catalog/services.yml in home-infra
+  user: tomatic_bridge                      # to be provisioned at H1; ACL on `zigbee` RPi
+  acl_topics_publish:
+    - "tomatic/+/commands/+/request"
+    - "zigbee2mqtt/+/set"
+    - "tomatic/+/agent/+"
+  acl_topics_subscribe:
+    - "tomatic/+/sensors/#"
+    - "tomatic/+/commands/+/ack"
+    - "tomatic/+/alerts/#"
+    - "zigbee2mqtt/+"
 
 runbooks:
   rebuild: docs/operations/DEPLOY_PLAYBOOK.md     # links to ~/src/home-infra/docs/CONVENTIONS.md

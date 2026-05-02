@@ -7,7 +7,7 @@ Format:
 - Each decision is self-contained.
 - Facts and tradeoffs over narration.
 
-The first nine decisions below are extracted from the source design document `~/src/Tomatic_v3_2.docx` chapter 20 ("Decisiones de diseño y trade-offs"). They are pre-recorded here so the very first implementation session can move directly into H0 without re-litigating them. Any later contradiction should be captured as a new ADR (D-010+) explaining the deviation, never as a silent edit to these entries.
+The first nine decisions below are extracted from the source design document [`../reference/Tomatic_v3_2.docx`](../reference/Tomatic_v3_2.docx) chapter 20 ("Decisiones de diseño y trade-offs"). They are pre-recorded here so the very first implementation session can move directly into H0 without re-litigating them. Any later contradiction should be captured as a new ADR (D-010+) explaining the deviation, never as a silent edit to these entries.
 
 ---
 
@@ -33,9 +33,9 @@ The premise of the project is that Carlos's daughter does not touch firmware cod
 
 The QNAP NAS has more RAM, more CPU, and robust storage compared to the Pi. SQLite with WAL and a long historical dashboard fit there better. The Pi 5 stays dedicated to Z2M (where the Zigbee radio already lives). Moving Z2M off the Pi would mean buying another coordinator. The NAS is always on and designed for 24/7 services. Snapshots and replication on the NAS are trivial.
 
-**Consequence**: the production target for V1.0 is QNAP Container Station with `compose/docker-compose.prod-nas.yml`. The Pi 5 becomes a peer that holds Z2M; the bridge crosses brokers (NAS Mosquitto for Tomatic topics, Pi Mosquitto for `zigbee2mqtt/+/set`). Windows is dev only — no persistent services.
+**Consequence**: the production target for V1.0 is QNAP Container Station with `compose/docker-compose.prod-nas.yml`. The Pi 5 holds Z2M *and* the shared MQTT broker. The bridge runs a single MQTT client against `zigbee.home.arpa:1883` (D-010 / `home-infra` ADR-0011); both `tomatic/+` and `zigbee2mqtt/+/set` live there. Windows is dev only — no persistent services.
 
-**Open question**: whether to run a Tomatic-dedicated Mosquitto on the NAS or reuse the existing one on `zigbee`. Default for now: dedicated. Revisit before H1.
+**Resolved**: D-010 (2026-05-02) supersedes the original "NAS Mosquitto + Pi Mosquitto cross-broker bridge" sketch from this consequence. The bridge now uses a single broker.
 
 ## D-005 — SQLite + WAL + drizzle + litestream
 
@@ -69,6 +69,30 @@ Building the agent-runner against a multi-provider client from day one preserves
 
 ---
 
-## D-010+ (future)
+## D-010 — Reuse the shared Mosquitto on the `zigbee` RPi instead of running a Tomatic-dedicated broker
 
-Add new ADRs here when the implementation forces a deviation from the source design document or when an open question is resolved (e.g. Mosquitto topology, public dashboard host, Doppler project layout).
+- **Date:** 2026-05-02
+- **Status:** accepted
+- **Upstream reference:** `home-infra` ADR-0011 (canonical homelab decision; this entry mirrors the project-side consequences).
+
+### Context
+The source design document (`reference/Tomatic_v3_2.docx`, ch. 13 "Despliegue dockerizado") proposes a Tomatic-dedicated Mosquitto on the NAS, with the bridge holding two MQTT clients (NAS for `tomatic/+`, the existing `zigbee` RPi broker for `zigbee2mqtt/+/set`). Live verification on 2026-05-02 showed that the NAS no longer runs an MQTT broker — the previous container was stopped on 2026-02-21 and later removed (absent from `docker ps -a`). Only an orphan compose dir remains at `/share/Container/compose/mqtt/`. The only live broker on the homelab is the Mosquitto on the `zigbee` RPi (`zigbee.home.arpa:1883`, IP `10.0.0.139:1883`), already used by Z2M and Home Assistant.
+
+This was Open Question 1 in `HANDOFF.md`. Carlos resolved it on 2026-05-02 in favor of reusing the shared broker.
+
+### Decision
+Tomatic uses the existing Mosquitto on the `zigbee` RPi as its only broker. No NAS broker is created or revived. The decision is recorded as the canonical homelab fact in `~/src/home-infra/docs/DECISIONS.md` ADR-0011; this D-010 documents the project-side consequences inside the Tomatic repo.
+
+### Consequences
+- `packages/mqtt-bridge` (lands at H1) opens a single MQTT client against `zigbee.home.arpa:1883` and uses it for both `tomatic/<cabinet>/+` topics and `zigbee2mqtt/+/set` commands to Sonoff T2 actuators. The "two MQTT clients in the bridge" sketch from the source design document is dropped.
+- The `infra.contract.yml` at the repo root declares `mqtt.broker_service_id: mosquitto` and lists the ACL topic shapes the Tomatic clients need (publish: `tomatic/+/commands/+/request`, `zigbee2mqtt/+/set`, `tomatic/+/agent/+`; subscribe: `tomatic/+/sensors/#`, `tomatic/+/commands/+/ack`, `tomatic/+/alerts/#`, `zigbee2mqtt/+`). The dedicated Mosquitto user `tomatic_bridge` is provisioned and the ACL is applied on the existing broker at H1, not in this repo.
+- `home-infra/catalog/services.yml` declares `mosquitto` as a first-class shared service (host `zigbee`, category `infra`, status TCP probe on `:1883`) and adds `deps: [mosquitto]` to `zigbee2mqtt`, `ha`, and the planned `tomatic-web` / `tomatic-public-dashboard`. `infra-portal` will render the dependency graph.
+- A `zigbee` RPi reboot interrupts both Z2M and the Tomatic bus simultaneously. R5 (default-off electrical), R8 (idempotency by `command_id` + TTL in `mqtt-bridge` SQLite), and the autonomous local safe-state in the ESPHome firmware (source doc ch. 4) make this acceptable: the plant survives the broker being unreachable.
+- R3 (`retain=false` on commands) and the topic catalog in source doc ch. 6 remain enforced unchanged on the shared broker.
+- Open Question 1 in `HANDOFF.md` is resolved and removed from the open list.
+
+---
+
+## D-011+ (future)
+
+Add new ADRs here when the implementation forces a deviation from the source design document or when an open question is resolved (e.g. public dashboard host, Doppler project layout).

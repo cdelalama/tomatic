@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.1 -->
+<!-- doc-version: 0.1.3 -->
 # Tomatic
 
 **Agentic indoor tomato grow system — deterministic control-core, LLM-proposed intents, safe by default.**
@@ -15,7 +15,7 @@ Hardware is intentionally simple: an ESP32 running a single ESPHome YAML, sensor
 
 ## Status
 
-Scaffolded 2026-05-02. Source design document: `~/src/Tomatic_v3_2.docx` (Carlos, May 2026). No application code yet — see [docs/llm/HANDOFF.md](docs/llm/HANDOFF.md) for the current milestone (H0 — schemas + DB).
+Scaffolded 2026-05-02. Source design document: [docs/reference/Tomatic_v3_2.docx](docs/reference/Tomatic_v3_2.docx) (Carlos, May 2026). No application code yet — see [docs/llm/HANDOFF.md](docs/llm/HANDOFF.md) for the current milestone (H0 — schemas + DB).
 
 ## Quick Start
 
@@ -41,6 +41,7 @@ Eight layers, top to bottom: **public dashboard** (V1.2+) → **operator web** (
 | [docs/PROJECT_CONTEXT.md](docs/PROJECT_CONTEXT.md) | Vision, objectives, stakeholders, current state |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layers, hard rules R1–R12, key flows, contracts |
 | [docs/STRUCTURE.md](docs/STRUCTURE.md) | Planned monorepo layout |
+| [docs/reference/Tomatic_v3_2.docx](docs/reference/Tomatic_v3_2.docx) | Canonical source design document |
 | [docs/VERSIONING_RULES.md](docs/VERSIONING_RULES.md) | Version management policy |
 | [docs/llm/HANDOFF.md](docs/llm/HANDOFF.md) | Current work state |
 | [docs/llm/DECISIONS.md](docs/llm/DECISIONS.md) | Architectural decision log |

@@ -24,6 +24,9 @@ tomatic/
 |  +- STRUCTURE.md                      this file
 |  +- VERSIONING_RULES.md               version management policy
 |  +- version-sync-manifest.yml         files tracked for version sync
+|  +- reference/
+|  |  +- README.md                      reference document index
+|  |  +- Tomatic_v3_2.docx              canonical source design document
 |  +- llm/
 |  |  +- HANDOFF.md                     current focus
 |  |  +- HISTORY.md                     append-only session log
@@ -128,6 +131,7 @@ Only the DocKit scaffold + homelab profile:
 
 - Top-level: `README.md`, `AGENTS.md`, `CLAUDE.md → AGENTS.md`, `LICENSE`, `LLM_START_HERE.md`, `VERSION`, `CHANGELOG.md`, `infra.contract.yml`, `.gitignore`.
 - `docs/PROJECT_CONTEXT.md`, `ARCHITECTURE.md`, `STRUCTURE.md`, `VERSIONING_RULES.md`, `version-sync-manifest.yml`.
+- `docs/reference/README.md`, `Tomatic_v3_2.docx` (canonical source design document).
 - `docs/llm/HANDOFF.md`, `HISTORY.md`, `DECISIONS.md`, `README.md`, `REVIEWS.md`.
 - `docs/operations/README.md`, `DEPLOY_PLAYBOOK.md`, `API_CONTRACT.md`.
 - `scripts/` with the DocKit version + validate scripts and the pre-commit-hook template.
@@ -160,7 +164,7 @@ Only the DocKit scaffold + homelab profile:
 - `node_modules/`, `dist/`, `build/`, `.next/` — pnpm + Next.js outputs.
 - `coverage/` — vitest output.
 - `firmware/esphome/.esphome/` — ESPHome build cache.
-- On the NAS only: `data/sqlite/`, `data/mosquitto/`, `data/esphome/` — runtime data, replicated by litestream.
+- On the NAS only: `data/sqlite/`, `data/esphome/` — runtime data, replicated by litestream. No `data/mosquitto/` on NAS — the shared MQTT broker lives on the `zigbee` RPi (D-010 / `home-infra` ADR-0011); the simulator profile `docker-compose.sim.yml` still spins its own Mosquitto with `compose/mosquitto/` config for zero-hardware development.
 
 ## Naming Conventions
 
@@ -172,7 +176,7 @@ Only the DocKit scaffold + homelab profile:
 
 ## Onboarding Notes
 
-- Read `~/Tomatic_v3_2.docx` end-to-end before touching code. Chapter 4 is axiomatic.
+- Read `docs/reference/Tomatic_v3_2.docx` end-to-end before touching code. Chapter 4 is axiomatic.
 - For deploy work, **AGENTS.md** is the read-first document and `~/src/home-infra/docs/CONVENTIONS.md` covers NAS quirks (no `docker compose` subcommand, `/usr/local/lib/docker/cli-plugins/docker-compose`, no `bash`, deploy by `docker save | ssh ... 'docker load'`).
 - The homelab checklist `.claude/checklists/homelab-project.md` is the gate before declaring deploy done.
 - The pre-commit hook enforces version bumps; run `scripts/bump-version.sh <new>` rather than editing markers by hand.
