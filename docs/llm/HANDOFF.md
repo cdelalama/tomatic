@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.3 -->
+<!-- doc-version: 0.1.4 -->
 # LLM Work Handoff
 
 This file is the current operational snapshot. Long-form rationale lives in
@@ -6,9 +6,9 @@ This file is the current operational snapshot. Long-form rationale lives in
 
 ## Current Status
 
-- Last Updated: 2026-05-02 - Claude Opus 4.7
-- Session Focus: Context audit before H0. Verified live state of the homelab MQTT topology, corrected `home-infra/docs/{INVENTORY,SERVICES,PROJECTS}.md`, and resolved the broker decision (D-010 / `home-infra` ADR-0011) — Tomatic reuses the shared Mosquitto on the `zigbee` RPi. No application code yet.
-- Status: Ready to start **H0 — Schemas + DB** in the next session. No blockers.
+- Last Updated: 2026-05-02 - Claude Opus 4.7 (1M context)
+- Session Focus: Pre-H0 — provisioned the ESPHome Builder on NAS as the first Tomatic service in the homelab. Registered in `home-infra/catalog/services.yml` with `interface: web` (home-infra-protocol 0.2.0). D-011 records the decision to pull this out of source-doc H10.
+- Status: **Pre-H0 done.** `tomatic-esphome` is up at `http://10.0.0.220:6052/` (verified `state=up` HTTP 200 from `infra-portal`). Ready to start **H0 — Schemas + DB** next session. No blockers.
 
 ## Project Summary
 

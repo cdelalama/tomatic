@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.3 -->
+<!-- doc-version: 0.1.4 -->
 # Tomatic
 
 **Agentic indoor tomato grow system — deterministic control-core, LLM-proposed intents, safe by default.**

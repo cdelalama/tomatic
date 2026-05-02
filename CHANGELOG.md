@@ -4,6 +4,34 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning (SemVer): MAJOR.MINOR.PATCH.
 
+## [0.1.4] - 2026-05-02
+
+### Added
+
+- **Pre-H0 deploy:** `tomatic-esphome` container live on NAS at
+  `http://10.0.0.220:6052/` (image `ghcr.io/esphome/esphome:latest`,
+  `network_mode: host`, compose at `/share/Container/compose/tomatic/`,
+  volume `firmware/esphome/`, no `privileged`). First Tomatic service
+  on the homelab. ESPHome Builder UI available for YAML exploration
+  ahead of H10.
+- D-011 in `docs/llm/DECISIONS.md` — pull ESPHome Builder out of source-doc
+  H10 to Pre-H0 so the NAS deploy chain is validated early and the YAML
+  editor is available before firmware work begins. Diff vs the source-doc
+  compose: `privileged: true` removed (NAS never holds USB, first flash
+  is from the operator's PC via `web.esphome.io`); compose file is
+  single-service today and grows additively from H1+.
+- `home-infra/catalog/services.yml` registers `tomatic-esphome` as
+  `category: tools`, `interface: web` (using the just-shipped
+  `home-infra-protocol` 0.2.0 field), `status.type: http`. Verified live
+  by `infra-portal` at 23:28 UTC: `state=up`, HTTP 200.
+
+### Changed
+
+- `home-infra/docs/{INVENTORY,SERVICES,PROJECTS}.md` reflect the new
+  container and the Pre-H0 status of Tomatic.
+
+### Fixed
+
 ## [0.1.3] - 2026-05-02
 
 ### Added
