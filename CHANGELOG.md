@@ -4,6 +4,22 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning (SemVer): MAJOR.MINOR.PATCH.
 
+## [0.1.7] - 2026-05-03
+
+### Fixed
+
+- `scripts/dockit-bootstrap-context.sh`: propagated the awk fix from
+  upstream LLM-DocKit 4.7.1 (commit `0694c1d`). The previous version
+  exited the reading-order extraction on the first blank line after
+  capture started — including a blank line some repos place between
+  "Recommended reading order:" and the first numbered item. Tomatic's
+  `LLM_START_HERE.md` did not have that blank line so this repo was
+  unaffected at runtime, but propagating the fix keeps the script in
+  sync with upstream and avoids future drift if the template is ever
+  customised. Bumped 0.1.6 → 0.1.7 because the pre-commit hook
+  correctly flags any change to `scripts/*.sh` as code/config requiring
+  a version bump.
+
 ## [0.1.6] - 2026-05-03
 
 ### Added
