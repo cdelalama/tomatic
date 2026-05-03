@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.4 -->
+<!-- doc-version: 0.1.5 -->
 # LLM Work Handoff
 
 This file is the current operational snapshot. Long-form rationale lives in
@@ -6,9 +6,9 @@ This file is the current operational snapshot. Long-form rationale lives in
 
 ## Current Status
 
-- Last Updated: 2026-05-02 - Claude Opus 4.7 (1M context)
-- Session Focus: Pre-H0 — provisioned the ESPHome Builder on NAS as the first Tomatic service in the homelab. Registered in `home-infra/catalog/services.yml` with `interface: web` (home-infra-protocol 0.2.0). D-011 records the decision to pull this out of source-doc H10.
-- Status: **Pre-H0 done.** `tomatic-esphome` is up at `http://10.0.0.220:6052/` (verified `state=up` HTTP 200 from `infra-portal`). Ready to start **H0 — Schemas + DB** next session. No blockers.
+- Last Updated: 2026-05-03 - Claude Opus 4.7 (1M context)
+- Session Focus: Audit follow-up. Renamed Pre-H0 service from `tomatic-esphome` to `esphome-builder` (shared homelab service, not Tomatic-owned). Synced `infra.contract.yml`, `LLM_START_HERE.md`. Wrote DF entries in `home-infra-protocol` and `LLM-DocKit` capturing the "claim-vs-deployment drift" class of bug surfaced by the audit.
+- Status: **Pre-H0 done (clean).** `esphome-builder` is up at `http://10.0.0.220:6052/` (state=up HTTP 200 from `infra-portal`). Tomatic owns no container yet; consumes the shared `esphome-builder` and (planned) `mosquitto`. Ready to start **H0 — Schemas + DB** next session. No blockers.
 
 ## Project Summary
 

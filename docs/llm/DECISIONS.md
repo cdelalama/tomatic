@@ -195,6 +195,37 @@ verbatim, with two deliberate differences:
   ADR; the corresponding `home-infra` commit `87400d8` registers the
   service.
 
+### Addendum 2026-05-03 — rename to `esphome-builder` (drop the `tomatic-` prefix)
+
+Audit feedback on 2026-05-03 pointed out that `tomatic-esphome` is a
+misleading name: ESPHome is a generic ESP32 firmware development tool,
+and Tomatic is just its first adopter. Following the homelab
+convention (cf. `mosquitto` on the `zigbee` RPi, which is shared and
+not called `tomatic-mosquitto` even though Tomatic is one of its
+consumers), the container, compose dir, and catalog id are renamed:
+
+- container_name: `tomatic-esphome` → `esphome-builder`
+- compose dir on NAS: `/share/Container/compose/tomatic/` →
+  `/share/Container/compose/esphome-builder/`
+- `home-infra/catalog/services.yml` id: `tomatic-esphome` →
+  `esphome-builder`; tags drop `tomatic`; description rewritten as a
+  shared homelab service with Tomatic as first adopter
+- tomatic project no longer claims this container as one of its
+  owned `services:`; instead it is referenced from the new
+  `consumes:` block in `infra.contract.yml` alongside `mosquitto`
+- The original compose path `/share/Container/compose/tomatic/` is
+  reserved for tomatic-owned containers (bridge, control-core,
+  web operativa) starting at H1; it does not exist on the NAS today
+
+The portal picked up the rename at 2026-05-03 14:30 UTC: catalog
+shows `esphome-builder`, `tomatic-esphome` is gone, `state=up` HTTP
+200. `home-infra` commit `15c0a1c` carries the catalog and INVENTORY
+edits.
+
+This addendum does not change D-011's substance — the Pre-H0
+decision and its rationale stand. It only fixes the name and
+ownership model that surfaced under audit.
+
 ---
 
 ## D-012+ (future)

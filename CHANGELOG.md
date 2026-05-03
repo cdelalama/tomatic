@@ -4,6 +4,50 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning (SemVer): MAJOR.MINOR.PATCH.
 
+## [0.1.5] - 2026-05-03
+
+### Added
+
+- D-011 addendum (2026-05-03) in `docs/llm/DECISIONS.md` recording
+  the rename of the Pre-H0 service from `tomatic-esphome` to
+  `esphome-builder` after audit feedback. Shared homelab services
+  do not carry first-adopter project names.
+- `infra.contract.yml`: new top-level `consumes:` block listing the
+  shared homelab services this project depends on (`mosquitto` on
+  zigbee, `esphome-builder` on NAS) with role + detail. Tomatic-local
+  contract extension (additionalProperties allowed by the schema);
+  migrates if `home-infra-protocol` formalises a canonical name.
+  Also added planned services `tomatic-bridge` (H1) and
+  `tomatic-control-core` (H4) to the existing `services:` array
+  with their dependency edges.
+
+### Changed
+
+- Container renamed: `tomatic-esphome` → `esphome-builder`. Compose
+  dir on NAS moved from `/share/Container/compose/tomatic/` to
+  `/share/Container/compose/esphome-builder/`. The `tomatic/` path
+  is now reserved for tomatic-owned containers (bridge, control-core,
+  web operativa) starting at H1 — currently does not exist on NAS.
+- `home-infra/catalog/services.yml`: id `tomatic-esphome` →
+  `esphome-builder`; tags drop `tomatic`; description rewritten as
+  shared homelab service with Tomatic as first adopter.
+- `home-infra/docs/{INVENTORY,SERVICES,PROJECTS}.md` updated.
+  PROJECTS notes that tomatic does not yet own any container; it
+  consumes the shared `esphome-builder` and (planned) `mosquitto`.
+- `LLM_START_HERE.md` Current Focus synced with HANDOFF (it was
+  still saying "Initial scaffold + doc rewrite. No application code
+  yet.").
+- `infra.contract.yml`: removed the planned `tomatic-esphome-builder`
+  from the `services:` array. The Builder is no longer claimed as a
+  tomatic-owned service; it is consumed via the new `consumes:`
+  block.
+
+### Fixed
+
+- Stale `LLM_START_HERE.md` Current Focus contradicting HANDOFF. The
+  drift was invisible to the validator because both files were
+  marker-synced.
+
 ## [0.1.4] - 2026-05-02
 
 ### Added

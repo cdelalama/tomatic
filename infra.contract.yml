@@ -13,9 +13,12 @@ id: tomatic
 name: Tomatic
 repository: https://github.com/cdelalama/tomatic
 
-# Services land hit by hit. Until V1.0-kernel reaches H10–H11 these are
-# planned, not deployed. Update this file when the corresponding
-# container actually runs on the NAS.
+# Services *owned by tomatic* (will run as containers in the tomatic
+# compose dir). Land hit by hit; today none are deployed.
+# Shared homelab services that tomatic *consumes* but does not own
+# (mosquitto on zigbee, esphome-builder on nas) live in the
+# `consumes:` block below — they are referenced by id back to
+# `home-infra/catalog/services.yml`.
 services:
   - id: tomatic-web
     name: Tomatic Operator Web
@@ -29,16 +32,46 @@ services:
     deps: [mosquitto]
     # Static DNS record + edge-caddy vhost will be added at H18.
 
-  - id: tomatic-esphome-builder
-    name: Tomatic ESPHome Builder
-    url: http://10.0.0.220:6052            # planned, internal-only
+  - id: tomatic-bridge
+    name: Tomatic MQTT bridge
+    url: http://10.0.0.220:8081            # planned, internal-only (/healthz /readyz /metrics)
+    deps: [mosquitto]
+    # Lands at H1.
+
+  - id: tomatic-control-core
+    name: Tomatic Control Core
+    url: http://10.0.0.220:8082            # planned, internal-only (/healthz /readyz /metrics)
+    deps: [tomatic-bridge]
+    # Lands at H4.
+
+# Shared homelab services this project depends on. These are NOT owned
+# by tomatic; the source of truth for them is
+# `~/src/home-infra/catalog/services.yml`. Listed here so tomatic's
+# runbooks and the project topology view can show the dependency.
+# The `consumes:` field is a tomatic-local extension to the project
+# contract; the schema permits unknown fields
+# (additionalProperties: true). If `home-infra-protocol` formalises a
+# canonical name for this concept later, this block migrates.
+consumes:
+  - service_id: mosquitto                   # zigbee RPi 10.0.0.139:1883
+    role: message-bus
+    detail: see mqtt: block below for ACL + user provisioning at H1.
+  - service_id: esphome-builder             # NAS 10.0.0.220:6052
+    role: firmware-development
+    detail: |
+      Shared ESPHome dashboard. Hosts the `tomatic-cabinet-a.yaml`
+      from H10 onwards (alongside any other ESP32 YAMLs in the
+      homelab). Provisioned 2026-05-02 per D-011; renamed from
+      `tomatic-esphome` to `esphome-builder` on 2026-05-03 (D-011
+      addendum) because shared services do not carry first-adopter
+      project names.
 
 runtime: docker
 
 deploy:
   host: nas                                 # primary target per source doc §13 (NAS-first)
   method: docker-save-load                  # build on dev-vm, transfer to NAS
-  compose: /share/Container/compose/tomatic/
+  compose: /share/Container/compose/tomatic/   # reserved for tomatic-owned containers; created at H1
 
 # MQTT topology — see home-infra ADR-0011 (2026-05-02) and project ADR D-010.
 # Tomatic does NOT run its own broker. It reuses the existing shared

@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.4 -->
+<!-- doc-version: 0.1.5 -->
 # LLM Start Guide - tomatic
 
 ## Read This First (Mandatory)
@@ -74,9 +74,9 @@ Recommended reading order:
 ## Current Focus (Snapshot)
 
 Source of truth: docs/llm/HANDOFF.md.
-- Last Updated: 2026-05-02 - Claude Opus 4.7
-- Working on: Initial scaffold + doc rewrite. No application code yet.
-- Status: Ready to start **H0 — Schemas + DB** in the next session (pnpm workspace, Zod schemas, drizzle, SQLite WAL, vitest, GitHub Actions test workflow).
+- Last Updated: 2026-05-03 - Claude Opus 4.7 (1M context)
+- Working on: Pre-H0 closed. Tomatic consumes the shared `esphome-builder` on NAS (`http://10.0.0.220:6052/`, see `home-infra/catalog/services.yml`) and the shared `mosquitto` on the `zigbee` RPi. No tomatic-owned containers yet.
+- Status: Ready to start **H0 — Schemas + DB** in the next session (pnpm workspace, Zod schemas, drizzle, SQLite WAL, vitest, GitHub Actions test workflow). No blockers.
 
 Keep this section synchronized with the "Current Status" block in docs/llm/HANDOFF.md.
 
