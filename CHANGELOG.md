@@ -4,6 +4,33 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning (SemVer): MAJOR.MINOR.PATCH.
 
+## [0.1.6] - 2026-05-03
+
+### Added
+
+- `scripts/dockit-bootstrap-context.sh`: copied directly from LLM-DocKit
+  4.7.0 (registered upstream in `dockit-sync-manifest.yml` with
+  `strategy: copy`). POSIX shell, ~7 KB, zero external dependencies.
+  Reads this repo's `LLM_START_HERE.md` "Recommended reading order:"
+  section dynamically and emits a Claude Code SessionStart
+  `additionalContext` JSON payload (`--json`, default) or plain text
+  (`--human`) for non-Claude LLMs. Tomatic's reading order has 9
+  entries; output is ~2.4 KB, well under the 10 KB SessionStart hook
+  limit. Closes upstream LLM-DocKit DF-033 on the Claude Code axis for
+  this repo.
+- `.claude/settings.json`: new `SessionStart` hook block calling the
+  script with `--json`, wrapped in
+  `sh -c 'if [ -x scripts/dockit-bootstrap-context.sh ]; then ...; fi'`
+  for graceful degradation. The protocol enforced: first substantive
+  reply must begin with literally `Onboarding loaded.` (after reading
+  the listed files) or `Onboarding skipped: <reason>` (for trivial
+  requests that do not depend on architectural context). Existing
+  Stop / PostToolUse / PreCompact hooks unchanged.
+
+### Changed
+
+### Fixed
+
 ## [0.1.5] - 2026-05-03
 
 ### Added

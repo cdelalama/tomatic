@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.5 -->
+<!-- doc-version: 0.1.6 -->
 # LLM Work Handoff
 
 This file is the current operational snapshot. Long-form rationale lives in
@@ -6,9 +6,9 @@ This file is the current operational snapshot. Long-form rationale lives in
 
 ## Current Status
 
-- Last Updated: 2026-05-03 - Claude Opus 4.7 (1M context)
-- Session Focus: Audit follow-up. Renamed Pre-H0 service from `tomatic-esphome` to `esphome-builder` (shared homelab service, not Tomatic-owned). Synced `infra.contract.yml`, `LLM_START_HERE.md`. Wrote DF entries in `home-infra-protocol` and `LLM-DocKit` capturing the "claim-vs-deployment drift" class of bug surfaced by the audit.
-- Status: **Pre-H0 done (clean).** `esphome-builder` is up at `http://10.0.0.220:6052/` (state=up HTTP 200 from `infra-portal`). Tomatic owns no container yet; consumes the shared `esphome-builder` and (planned) `mosquitto`. Ready to start **H0 — Schemas + DB** next session. No blockers.
+- Last Updated: 2026-05-03 - Claude Opus 4.7 (1M context) + GPT-5 (concur) + Carlos (arbiter)
+- Session Focus: Adopted LLM-DocKit 4.7.0's new SessionStart-side enforcement primitive directly into this repo (script `scripts/dockit-bootstrap-context.sh` + `.claude/settings.json` SessionStart hook entry) so the failure mode named in upstream **DF-033** is closed for the project under active work. Trigger: 2026-05-03 incident in a sibling Codex CLI session inside `home-infra-protocol` where the agent gave a partial ecosystem opinion because it had not read `LLM_START_HERE.md` despite the rule being declared at lines 9 and 87. Fix is mechanical (hook-injected `additionalContext` at session start), not more prose; rationale recorded as upstream LLM-DocKit D-007.
+- Status: **Pre-H0 still done (clean), no application-code change in this session.** `esphome-builder` continues `state=up` at `http://10.0.0.220:6052/`. Tomatic still owns no container; consumes the shared `esphome-builder` and (planned) `mosquitto`. Ready for **H0 — Schemas + DB** next session, with the new SessionStart hook now active so the next session loads onboarding before answering. **Version bumped 0.1.5 → 0.1.6 (patch)** because the pre-commit hook correctly classified the two new scaffold-path files (`scripts/dockit-bootstrap-context.sh`, `.claude/settings.json`) as code/config that introduces new behavior in this repo and therefore deserves a version bump — my earlier reasoning that "scaffold-managed paths are excluded" was a misreading of the hook's intent (the hook excludes `docs/`, `.github/`, `.claude/` rules-only paths, but `.claude/settings.json` carries actual hook configuration that changes runtime behavior). Side observation: the hook's exclusion regex `'^\\.claude/'` has a stray double-backslash and would never match anyway — captured as a follow-up note for a separate session, not addressed in this commit. The upstream version that landed the primitive is LLM-DocKit 4.7.0 — when next `dockit-sync` runs in this repo it will be a no-op for both files (already up to date).
 
 ## Project Summary
 

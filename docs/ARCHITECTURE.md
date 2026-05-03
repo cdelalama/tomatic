@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.5 -->
+<!-- doc-version: 0.1.6 -->
 # Tomatic Architecture
 
 > Version: 0.1.0-draft
