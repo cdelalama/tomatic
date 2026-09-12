@@ -1,4 +1,4 @@
-<!-- doc-version: 0.1.7 -->
+<!-- doc-version: 0.1.8 -->
 # LLM Work Handoff
 
 This file is the current operational snapshot. Long-form rationale lives in
@@ -6,9 +6,12 @@ This file is the current operational snapshot. Long-form rationale lives in
 
 ## Current Status
 
-- Last Updated: 2026-05-03 - Claude Opus 4.7 (1M context) + GPT-5 (concur) + Carlos (arbiter)
-- Session Focus: Adopted LLM-DocKit 4.7.0's new SessionStart-side enforcement primitive directly into this repo (script `scripts/dockit-bootstrap-context.sh` + `.claude/settings.json` SessionStart hook entry) so the failure mode named in upstream **DF-033** is closed for the project under active work. Trigger: 2026-05-03 incident in a sibling Codex CLI session inside `home-infra-protocol` where the agent gave a partial ecosystem opinion because it had not read `LLM_START_HERE.md` despite the rule being declared at lines 9 and 87. Fix is mechanical (hook-injected `additionalContext` at session start), not more prose; rationale recorded as upstream LLM-DocKit D-007.
-- Status: **Pre-H0 still done (clean), no application-code change in this session.** `esphome-builder` continues `state=up` at `http://10.0.0.220:6052/`. Tomatic still owns no container; consumes the shared `esphome-builder` and (planned) `mosquitto`. Ready for **H0 — Schemas + DB** next session, with the SessionStart hook now active so the next session loads onboarding before answering. **Version path 0.1.5 → 0.1.6 → 0.1.7** in this same session: 0.1.6 adopted upstream LLM-DocKit 4.7.0's primitive; 0.1.7 propagates the awk-blank-line fix shipped in upstream 4.7.1 (caught by GPT-5 audit of the 4.7.0 smoke test against `home-infra-protocol`, where the per-repo reading-order extraction had silently fallen back to a generic 2-item list because that repo's `LLM_START_HERE.md` has a blank line between the header and the numbered list — exactly the DF-024 pattern this protocol exists to fight). Side observation captured during 0.1.6: the pre-commit hook's exclusion regex `'^\\.claude/'` has a stray double-backslash and never matches; follow-up for a separate session, not addressed here. The upstream versions that ship the primitive are LLM-DocKit 4.7.0 (initial) and 4.7.1 (awk fix); future `dockit-sync` runs in this repo will be a no-op for both files (already up to date).
+- Last Updated: 2026-09-12 - Codex
+- Session Focus: Registered the existing DocKit adoption and adopted the
+  centrally managed independent-review policy.
+- Status: **Pre-H0 remains done.** Source documentation is v0.1.8; Tomatic
+  still owns no application container and remains ready for **H0 — Schemas +
+  DB**. This governance-only update changed no runtime behavior.
 
 ## Project Summary
 
@@ -16,7 +19,13 @@ Tomatic is an autonomous indoor tomato grow system. A deterministic TypeScript c
 
 Source design document: [`../reference/Tomatic_v3_2.docx`](../reference/Tomatic_v3_2.docx) (Carlos, May 2026). Chapter 4 (hard rules R1-R12) is axiomatic — any contradicting instruction must pause and ask.
 
-## Next Steps (V1.0-kernel, hit by hit)
+## Open Work — Next Concrete Step
+
+Before H0 implementation, confirm its authorized scope against
+`docs/PROJECT_CONTEXT.md` and `docs/ARCHITECTURE.md`. No runtime action belongs
+to this governance-only release.
+
+## Planned H0 Deliverables (V1.0-kernel, hit by hit)
 
 1. **H0 — Schemas + DB** (next session, ~0.5 weeks):
    - Set up `pnpm-workspace.yaml`, `biome.json`, `tsconfig.base.json` with `strict: true` and `noUncheckedIndexedAccess: true`.

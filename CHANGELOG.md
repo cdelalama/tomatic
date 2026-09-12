@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning (SemVer): MAJOR.MINOR.PATCH.
 
+## [0.1.8] - 2026-09-12
+
+### Added
+
+### Changed
+
+- Registered this existing DocKit adoption and adopted the centrally managed
+  independent-review policy without changing application or runtime behavior.
+
+### Fixed
+
 ## [0.1.7] - 2026-05-03
 
 ### Fixed
