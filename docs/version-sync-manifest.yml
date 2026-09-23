@@ -17,3 +17,4 @@ targets:
 - path: docs/ARCHITECTURE.md       marker: html-comment
 - path: docs/VERSIONING_RULES.md   marker: html-comment
 - path: docs/llm/HANDOFF.md        marker: html-comment
+- path: docs/DELIVERY_CONTRACT.md marker: html-comment

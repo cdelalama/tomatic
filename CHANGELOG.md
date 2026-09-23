@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file.
 
 This project follows Semantic Versioning (SemVer): MAJOR.MINOR.PATCH.
 
+## [0.1.9] - 2026-09-23
+
+### Changed
+- Updated DocKit delivery checks and Opus 5.5 review policy; no runtime deployment.
+
+
+
+
 ## [0.1.8] - 2026-09-12
 
 ### Added
